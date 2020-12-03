@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+        <!-- Google Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Material Design Bootstrap -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+            
+
+
+        <title>SQL code</title>
+
+    </head>
+
+    
+
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+            <a class="navbar-brand" href="#">
+            <h1>SQL Alchemy API</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto">
+                    <a class="nav-item nav-link" href="{{ url_for('home') }}"><h5>Home</h5> <span class="sr-only">(current)</span></a>
+
+                    <a class="nav-item nav-link active" href="{{ url_for('code') }}">
+                        <h5 href="{{ url_for('code') }}">SQL Alchemy code</h5>
+                    </a>
+
+                    <a class="nav-item nav-link" href="{{ url_for('about') }}">
+                        <h5 href="{{ url_for('about') }}">About</h5>
+                    </a>
+                    
+                </div>
+
+            </div>
+        </nav>
+                
+        <div class="container">
+            <!-- First Row-->
+            <div class="row">
+                <div>
+                    <div class="col" id="covid">
+                        <p>
+                            
+                            from flask import Flask,jsonify,render_template
+                            import sqlalchemy
+                            from sqlalchemy import create_engine
+                            import pandas as pd
+                            from sqlalchemy.ext.automap import automap_base
+
+                            #%%
+                            ### Database Setup
+                            engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+                            #%%
+                            #reflect an existing database into a new model
+                            Base=automap_base()
+                            #reflect the tables
+                            Base.prepare(engine,reflect=True)
+                            Base.classes.keys()
+                            #%%
+                            ### Flask Setup
+                            app = Flask(__name__)
+                            #%%
+                            # Flask Routes
+                            @app.route("/")
+                            def welcome():
+                                return render_template("index.html")
+
+                            #%%
+                            ### PRECIPITATION APP
+                            @app.route("/api/v1.0/precipitation")
+                            def precipitation():
+
+                                #Convert the query results to a dictionary using `date` as the key and `prcp` as the value
+                                results = pd.read_sql("SELECT date,prcp FROM measurement", engine)
+                                results.dropna(inplace=True)
+                                results_dict = dict(zip(results.date, results.prcp))
+
+                                #Return the JSON representation of your dictionary.
+                                results_json=jsonify( results_dict)
+                                return results_json
+                            
+                            #%%
+                            ### STATIONS APP
+                            @app.route("/api/v1.0/stations")
+                            def stations():
+                            
+                                #Return a JSON list of stations from the dataset.
+                                results = pd.read_sql("SELECT DISTINCT(station) FROM measurement", engine)
+                                results_json = results['station'].to_json(orient='records')
+                                return results_json
+                            
+                            #%%
+                            ### TEMPERATURE APP
+                            ### Dates and temperature observations for the last year of data
+                            @app.route("/api/v1.0/tobs")
+                            def date_temperature():
+                            
+                                #Query the dates and temperature observations of the most active station for the last year of data.
+                                results = pd.read_sql("SELECT * FROM measurement\
+                                                    WHERE station='USC00519281'\
+                                                    AND date BETWEEN\
+                                                    date('2016-08-23') AND date('2017-08-23')\
+                                                    ORDER BY DATE(date)", engine)
+
+                                #Return a JSON list of temperature observations (TOBS) for the previous year.
+                                results_json = results[['date','tobs']].to_json(orient='records')
+                                return results_json
+                                        
+                            #%%
+                            ### Start date given
+                            @app.route("/api/v1.0/<start>")
+                            def start_date(start):
+                                """Fetch data  for all dates greater than or equat to the start date the path variable is supplied by the use, or a 404 if not"""
+                                # When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
+                                start_text=sqlalchemy.text("SELECT date, min(tobs),avg(tobs),max(tobs) FROM measurement WHERE date >= :name group by date")
+                                results = pd.read_sql(start_text, engine,params={'name':start})
+                                for row in results:
+                                    if start<='2017-08-23':
+                                        results_json = results.to_json(orient='records')
+                                        return results_json
+                                    else:
+                                        return jsonify({"error": f" No data for date {start} was found.The last date in this dataset is '2017-08-23'"}),404
+
+                            #%%
+                            ### Start date and end date given
+                            # Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start-end range.
+                            @app.route("/api/v1.0/<start>/<end>")
+                            def start_end_date(start,end):
+                                
+                                """Fetch data  for all dates greater than or equal to the start date the path variable is supplied by the use, or a 404 if not"""
+                                start_text=sqlalchemy.text("SELECT date, min(tobs),avg(tobs),max(tobs) FROM measurement WHERE date\
+                                                        >= :name1 AND date <=:name2 group by date")
+                                # When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
+                                results = pd.read_sql(start_text, engine,params={'name1':start,'name2':end})
+                                for row in results:
+                                    if start>='2010-01-01' and end<='2017-08-23':
+                                        results_json = results.to_json(orient='records')
+                                        return results_json
+                                    else:
+                                        return jsonify({"error": f" Date range must be between '2010-01-01' and '2017-08-23'. There is no data for dates outside\
+                                                        this range."}),404
+
+
+                            #%%
+                            if __name__ == '__main__':
+                                app.run(debug=True)
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!--End of First Row -->
+
+    
+
+        </div>
+
+        
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+        <!-- JQuery -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js"></script>
+
+    </body>
+        
+    <!-- Start of footer -->
+    <footer class="footer navbar-fixed-bottom">
+        <div class="two-toned-footer-color"></div>
+        <p class="text-muted text-muted-footer text-center">
+            
+            <br><br>
+        </p>
+    </footer>
+    <!-- End of footer -->  
+</html>

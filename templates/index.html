@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+        <!-- Google Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Material Design Bootstrap -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+            
+
+
+        <title>SQL Alchemy Home</title>
+
+    </head>
+
+    
+
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+            <a class="navbar-brand" href="#">
+            <h1>SQL Alchemy API</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto">
+                    <a class="nav-item nav-link active" href="{{ url_for('home') }}"><h5>Home</h5> <span class="sr-only">(current)</span></a>
+
+                    <a class="nav-item nav-link" href="{{ url_for('code') }}">
+                        <h5 href="{{ url_for('code') }}">SQL Alchemy code</h5>
+                    </a>
+
+                    <a class="nav-item nav-link" href="{{ url_for('about') }}">
+                        <h5 href="{{ url_for('about') }}">About</h5>
+                    </a>
+                    
+                </div>
+
+            </div>
+        </nav>
+        <div class="container">
+        
+
+            <!-- First Row-->
+            <div class="row">
+                <div>
+                    <div class="col" style="background-color:blanchedalmond;height:570px;">
+                        <br><h2>Welcome to the query Home Page</h2><br/>
+                        <p>
+                            In this project we have a database containing precipitation,temperature and station data. The date range is from
+                            2010-01-01 to 2017-08-23. I use SQL Alchemy to allow the user to query the data they want from the database.
+                            Using the available routes, you can copy and paste the urls to view the data. 
+                            Example: <strong>"myweather/api/v1.0/precipitation"</strong>
+
+                            to return the home page, you can hit the back button or come back to myweather
+                         </p>
+                        <p>
+                            
+                            Below are the list of all available routes:<br/>
+                            /api/v1.0/precipitation<br/>
+                            /api/v1.0/stations<br/>
+                            /api/v1.0/tobs<br/>
+                            <br/>
+
+                            To view the data for specific temperature date ranges you can use the guidance below:<br>
+                            <strong>Date Ranges: </strong><br/>
+                            Enter your desired start date or end date as shown --  <i>/api/v1.0/YYYY-MM-DD</i><br/>
+                            /api/v1.0/&ltstart&gt<br/>
+                            /api/v1.0/&ltstart&gt/&ltend&gt<br/>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!--End of First Row -->
+
+    
+
+        </div>
+
+        
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+        <!-- JQuery -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js"></script>
+
+    </body>
+        
+    <!-- Start of footer -->
+    <footer class="footer navbar-fixed-bottom">
+        <div class="two-toned-footer-color"></div>
+        <p class="text-muted text-muted-footer text-center">
+            
+            <br><br>
+        </p>
+    </footer>
+    <!-- End of footer -->  
+</html>
